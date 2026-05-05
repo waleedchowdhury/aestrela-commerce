@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-sans: "Inter", "Helvetica Neue", Arial, sans-serif;
+  --font-editorial: "Cormorant Garamond", Georgia, serif;
+  color: #222528;
+  background: #fbfaf7;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #fbfaf7;
+  color: #222528;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+::selection {
+  background: #c7a85f;
+  color: #0b1f35;
+}
+
+.text-balance {
+  text-wrap: balance;
+}
+
+.thin-divider {
+  border-color: rgba(11, 31, 53, 0.12);
+}
+
+.emblem-mask {
+  border-radius: 9999px;
+  clip-path: circle(48% at 50% 50%);
+}
+
+.admin-field {
+  @apply w-full border border-ink/15 bg-white px-3 py-2 text-sm outline-none transition focus:border-champagne;
+}
+
+.admin-label {
+  @apply text-xs uppercase tracking-[0.24em] text-ink/55;
+}

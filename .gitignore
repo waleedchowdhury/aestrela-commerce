@@ -1,0 +1,12 @@
+.env
+.next
+.next-dev.err
+.next-dev.log
+.vs
+node_modules
+public/uploads/*
+!public/uploads/.gitkeep
+!public/uploads/products/.gitkeep
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
