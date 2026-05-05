@@ -107,7 +107,11 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
   return <button className="bg-ink px-5 py-3 text-xs uppercase tracking-[0.2em] text-pearl">{children}</button>;
 }
 
-export default async function AdminPage() {
+export default async function AdminPage({
+  searchParams
+}: {
+  searchParams?: Promise<{ error?: string }>;
+}) {
   if (process.env.GITHUB_PAGES === "true") {
     return (
       <main className="min-h-screen bg-porcelain px-5 pb-20 pt-40 md:px-8">
@@ -124,6 +128,8 @@ export default async function AdminPage() {
   }
 
   const admin = await isAdmin();
+  const params = await searchParams;
+  const invalidPassword = params?.error === "invalid";
 
   if (!admin) {
     return (
@@ -131,6 +137,11 @@ export default async function AdminPage() {
         <div className="mx-auto max-w-md bg-white p-8 shadow-soft">
           <p className="text-xs uppercase tracking-[0.32em] text-champagne">AESTRÉLA Admin</p>
           <h1 className="mt-3 font-editorial text-4xl font-normal text-ink">Sign in</h1>
+          {invalidPassword && (
+            <p className="mt-5 border border-red-900/20 bg-red-50 p-3 text-sm text-red-900">
+              The admin password did not match the Render environment variable. Check `ADMIN_PASSWORD` in Render and do not include quotes.
+            </p>
+          )}
           <form action={loginAction} className="mt-8 grid gap-5">
             <Field label="Password">
               <input name="password" type="password" className="admin-field" required />

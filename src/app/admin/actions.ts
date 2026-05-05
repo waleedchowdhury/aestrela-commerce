@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { clearAdminCookie, isAdmin, setAdminCookie } from "@/lib/admin-auth";
+import { clearAdminCookie, isAdmin, normalizedAdminPassword, setAdminCookie } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { saveUpload } from "@/lib/upload";
 
@@ -21,7 +21,7 @@ async function requireAdmin() {
 
 export async function loginAction(formData: FormData) {
   const password = text(formData, "password");
-  if (password !== (process.env.ADMIN_PASSWORD ?? "change-this-before-launch")) {
+  if (password !== normalizedAdminPassword()) {
     redirect("/admin?error=invalid");
   }
   await setAdminCookie();

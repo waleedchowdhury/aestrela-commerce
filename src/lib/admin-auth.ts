@@ -3,9 +3,22 @@ import { createHmac, timingSafeEqual } from "crypto";
 
 const cookieName = "aestrela-admin";
 
+export function normalizedAdminPassword() {
+  return normalizeSecret(process.env.ADMIN_PASSWORD ?? "change-this-before-launch");
+}
+
+function normalizeSecret(value: string) {
+  const trimmed = value.trim();
+  const quoted =
+    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+    (trimmed.startsWith("'") && trimmed.endsWith("'"));
+
+  return quoted ? trimmed.slice(1, -1).trim() : trimmed;
+}
+
 function signature() {
-  const password = process.env.ADMIN_PASSWORD ?? "change-this-before-launch";
-  const secret = process.env.ADMIN_COOKIE_SECRET ?? "development-secret";
+  const password = normalizedAdminPassword();
+  const secret = normalizeSecret(process.env.ADMIN_COOKIE_SECRET ?? "development-secret");
   return createHmac("sha256", secret).update(password).digest("hex");
 }
 
