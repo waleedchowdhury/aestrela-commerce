@@ -71,6 +71,6 @@ Required Render environment variables:
 - `PAYPAL_CLIENT_ID`
 - `PAYPAL_CLIENT_SECRET`
 - `PAYPAL_ENVIRONMENT`: `live` for production
-- `UPLOAD_DIR`: `/var/data/uploads` when using the Render disk in `render.yaml`
+- `UPLOAD_DIR`: optional. Leave unset on Render free plan. Use `/var/data/uploads` only after adding a paid persistent disk.
 
-For live uploads, keep the Render disk enabled or replace local upload storage with Azure Blob Storage/Cloudinary for CDN-backed global image delivery.
+The included `render.yaml` uses Render's free web service plan so you can deploy without adding payment information. On the free plan, uploaded files are not guaranteed to persist across restarts or redeploys. Before real launch, add a paid Render disk or replace local upload storage with Azure Blob Storage/Cloudinary for CDN-backed global image delivery.

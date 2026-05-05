@@ -2,7 +2,7 @@ services:
   - type: web
     name: aestrela-commerce
     runtime: node
-    plan: starter
+    plan: free
     buildCommand: npm ci && npm run build
     startCommand: npm run start
     autoDeploy: true
@@ -29,9 +29,3 @@ services:
         sync: false
       - key: PAYPAL_ENVIRONMENT
         value: live
-      - key: UPLOAD_DIR
-        value: /var/data/uploads
-    disk:
-      name: aestrela-uploads
-      mountPath: /var/data/uploads
-      sizeGB: 1
