@@ -42,3 +42,35 @@ Open `/admin` and log in with `ADMIN_PASSWORD`.
 ## Payments
 
 Add Stripe and PayPal credentials in `.env`. The checkout endpoints return a clear configuration error until credentials are present, which keeps development safe.
+
+## Render Deployment
+
+This repository includes `render.yaml` for a real Next.js web service deployment. Use Render Blueprint or create a Web Service manually from this GitHub repo.
+
+Render build command:
+
+```bash
+npm ci && npm run build
+```
+
+Render start command:
+
+```bash
+npm run start
+```
+
+Required Render environment variables:
+
+- `DATABASE_URL`: production SQL Server or Azure SQL connection string
+- `ADMIN_PASSWORD`: admin login password
+- `ADMIN_COOKIE_SECRET`: long random string
+- `NEXT_PUBLIC_SITE_URL`: Render service URL or future domain
+- `STRIPE_SECRET_KEY`
+- `STRIPE_WEBHOOK_SECRET`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
+- `PAYPAL_CLIENT_ID`
+- `PAYPAL_CLIENT_SECRET`
+- `PAYPAL_ENVIRONMENT`: `live` for production
+- `UPLOAD_DIR`: `/var/data/uploads` when using the Render disk in `render.yaml`
+
+For live uploads, keep the Render disk enabled or replace local upload storage with Azure Blob Storage/Cloudinary for CDN-backed global image delivery.

@@ -17,7 +17,8 @@ export async function saveUpload(file: File | null, folder = "general") {
   }
 
   const bytes = Buffer.from(await file.arrayBuffer());
-  const directory = path.join(process.cwd(), "public", "uploads", folder);
+  const uploadRoot = process.env.UPLOAD_DIR ?? path.join(process.cwd(), "public", "uploads");
+  const directory = path.join(uploadRoot, folder);
   await mkdir(directory, { recursive: true });
 
   const filename = `${Date.now()}-${safeName(file.name)}`;
