@@ -108,6 +108,21 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
 }
 
 export default async function AdminPage() {
+  if (process.env.GITHUB_PAGES === "true") {
+    return (
+      <main className="min-h-screen bg-porcelain px-5 pb-20 pt-40 md:px-8">
+        <div className="mx-auto max-w-2xl bg-white p-8 shadow-soft">
+          <p className="text-xs uppercase tracking-[0.32em] text-champagne">AESTRELA Admin</p>
+          <h1 className="mt-3 font-editorial text-4xl font-normal text-ink">Admin is available on the live server.</h1>
+          <p className="mt-5 text-sm leading-7 text-ink/65">
+            GitHub Pages is a static preview and cannot run SQL Server, Prisma, uploads, checkout, or admin server actions.
+            Deploy this project to a Next.js host with the environment variables from .env.example to use the full admin panel.
+          </p>
+        </div>
+      </main>
+    );
+  }
+
   const admin = await isAdmin();
 
   if (!admin) {

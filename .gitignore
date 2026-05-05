@@ -3,6 +3,7 @@
 .next-dev.err
 .next-dev.log
 .vs
+out
 node_modules
 public/uploads/*
 !public/uploads/.gitkeep
