@@ -8,6 +8,7 @@
     "build:pages": "node scripts/build-pages.mjs",
     "start": "node scripts/start.mjs",
     "lint": "eslint . --max-warnings=0",
+    "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
     "prisma:seed": "tsx prisma/seed.ts"
