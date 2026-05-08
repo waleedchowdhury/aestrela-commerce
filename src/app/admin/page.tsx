@@ -119,7 +119,7 @@ export default async function AdminPage({
           <p className="text-xs uppercase tracking-[0.32em] text-champagne">AESTRELA Admin</p>
           <h1 className="mt-3 font-editorial text-4xl font-normal text-ink">Admin is available on the live server.</h1>
           <p className="mt-5 text-sm leading-7 text-ink/65">
-            GitHub Pages is a static preview and cannot run SQL Server, Prisma, uploads, checkout, or admin server actions.
+            GitHub Pages is a static preview and cannot run Postgres, Prisma, uploads, checkout, or admin server actions.
             Deploy this project to a Next.js host with the environment variables from .env.example to use the full admin panel.
           </p>
         </div>
@@ -170,7 +170,7 @@ export default async function AdminPage({
 
         {!data.connected && (
           <div className="mt-8 border border-champagne/50 bg-champagne/10 p-5 text-sm leading-7 text-ink/75">
-            SQL Server is not connected yet, so the admin is showing fallback content. Add `DATABASE_URL`, run Prisma, then these forms will write directly to SQL Server.
+            Postgres is not connected yet, so the admin is showing fallback content. Add `DATABASE_URL`, run Prisma, then these forms will write directly to Vercel Postgres.
           </div>
         )}
 

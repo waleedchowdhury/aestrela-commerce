@@ -151,7 +151,7 @@ const admin = layout(
   `<main class="page">
     <p class="eyebrow">AESTRELA Admin</p>
     <h1>Admin is available on the live server.</h1>
-    <p>GitHub Pages is a static preview. The SQL Server admin panel, uploads, Stripe, and PayPal need a Next.js server host.</p>
+    <p>GitHub Pages is a static preview. The Postgres admin panel, uploads, Stripe, and PayPal need a Next.js server host.</p>
   </main>`
 );
 

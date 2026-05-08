@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlserver"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -22,7 +22,7 @@ model Product {
   id          String        @id @default(cuid())
   slug        String        @unique
   name        String
-  description String        @db.NVarChar(Max)
+  description String        @db.Text
   price       Decimal       @db.Decimal(10, 2)
   category    String        @default("Shop all")
   collection  String?
@@ -70,7 +70,7 @@ model Announcement {
 model HeroContent {
   id        String   @id @default("home")
   title     String
-  subtitle  String   @db.NVarChar(Max)
+  subtitle  String   @db.Text
   mediaUrl  String
   mediaType String   @default("image")
   ctaLabel  String   @default("Shop the collection")
@@ -81,8 +81,8 @@ model HeroContent {
 model EditorialContent {
   id        String   @id @default("story")
   label     String   @default("THE STORY")
-  quote     String   @db.NVarChar(Max)
-  body      String   @db.NVarChar(Max)
+  quote     String   @db.Text
+  body      String   @db.Text
   imageUrl  String
   updatedAt DateTime @updatedAt
 }
@@ -90,9 +90,9 @@ model EditorialContent {
 model FooterContent {
   id          String   @id @default("footer")
   designedIn  String   @default("Designed in Chicago")
-  brandText   String   @db.NVarChar(Max)
-  aboutText   String   @db.NVarChar(Max)
-  trustText   String   @db.NVarChar(Max)
+  brandText   String   @db.Text
+  aboutText   String   @db.Text
+  trustText   String   @db.Text
   facebookUrl String   @default("#")
   instagramUrl String  @default("#")
   updatedAt   DateTime @updatedAt
