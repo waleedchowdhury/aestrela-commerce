@@ -170,7 +170,7 @@ export default async function AdminPage({
 
         {!data.connected && (
           <div className="mt-8 border border-champagne/50 bg-champagne/10 p-5 text-sm leading-7 text-ink/75">
-            Postgres is not connected yet, so the admin is showing fallback content. Add `DATABASE_URL`, run Prisma, then these forms will write directly to Vercel Postgres.
+            The database is not connected yet, so the admin is showing fallback content. Add `DATABASE_URL`, run Prisma, then these forms will write directly to your configured database.
           </div>
         )}
 

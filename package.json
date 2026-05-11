@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "prisma generate --schema prisma/schema.sqlserver.prisma && next dev",
+    "dev:postgres": "prisma generate && next dev",
     "build": "prisma generate && next build",
     "build:pages": "node scripts/build-pages.mjs",
     "start": "node scripts/start.mjs",
@@ -11,7 +12,11 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:push": "prisma db push",
-    "prisma:seed": "tsx prisma/seed.ts"
+    "prisma:seed": "tsx prisma/seed.ts",
+    "prisma:generate:sqlserver": "prisma generate --schema prisma/schema.sqlserver.prisma",
+    "prisma:push:sqlserver": "prisma db push --schema prisma/schema.sqlserver.prisma",
+    "prisma:seed:sqlserver": "tsx prisma/seed.ts",
+    "dev:sqlserver": "prisma generate --schema prisma/schema.sqlserver.prisma && next dev"
   },
   "dependencies": {
     "@paypal/checkout-server-sdk": "^1.0.3",

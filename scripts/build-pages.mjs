@@ -3,7 +3,6 @@ import path from "node:path";
 
 const root = process.cwd();
 const outDir = path.join(root, "out");
-const basePath = "/aestrela-commerce";
 
 const products = [
   {
@@ -48,7 +47,7 @@ const productCards = products
   )
   .join("");
 
-function layout(title, body) {
+function layout(title, body, rootPath = ".") {
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -56,22 +55,22 @@ function layout(title, body) {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>${title}</title>
     <meta name="description" content="AESTRELA premium commerce storefront preview." />
-    <link rel="stylesheet" href="${basePath}/styles.css" />
+    <link rel="stylesheet" href="${rootPath}/styles.css" />
   </head>
   <body>
     <div class="announcement">FREE SHIPPING WORLDWIDE &nbsp;&nbsp;&nbsp; FREE SHIPPING WORLDWIDE &nbsp;&nbsp;&nbsp; FREE SHIPPING WORLDWIDE</div>
     <header class="site-header">
       <nav>
         <div class="nav-links">
-          <a href="${basePath}/">Home</a>
-          <a href="${basePath}/#collection">Collection</a>
-          <a href="${basePath}/shop/">Shop</a>
+          <a href="${rootPath}/">Home</a>
+          <a href="${rootPath}/#collection">Collection</a>
+          <a href="${rootPath}/shop/">Shop</a>
         </div>
-        <a href="${basePath}/" class="logo"><img src="${basePath}/brand/aestrela-logo-navbar-transparent.png" alt="AESTRELA" /></a>
+        <a href="${rootPath}/" class="logo"><img src="${rootPath}/brand/aestrela-logo-navbar-transparent.png" alt="AESTRELA" /></a>
         <div class="nav-icons">
-          <a href="${basePath}/admin/">Account</a>
-          <a href="${basePath}/shop/">Cart</a>
-          <a href="${basePath}/about/">About</a>
+          <a href="${rootPath}/admin/">Account</a>
+          <a href="${rootPath}/shop/">Cart</a>
+          <a href="${rootPath}/about/">About</a>
         </div>
       </nav>
     </header>
@@ -82,7 +81,7 @@ function layout(title, body) {
         <h2>AESTRÉLA</h2>
         <p>A premium fashion house focused on refined silhouettes, lasting materials, and a global standard of service.</p>
       </div>
-      <img class="emblem" src="${basePath}/brand/aestrela-emblem-transparent.png" alt="AESTRELA emblem" />
+      <img class="emblem" src="${rootPath}/brand/aestrela-emblem-transparent.png" alt="AESTRELA emblem" />
       <div>
         <p class="eyebrow">Trust</p>
         <p>Secure checkout · Worldwide shipping · Premium support</p>
@@ -97,7 +96,7 @@ const home = layout(
   "AESTRELA | Premium Commerce",
   `<main>
     <section class="hero">
-      <a href="${basePath}/shop-now/" class="hero-cta">Shop Now</a>
+      <a href="./shop-now/" class="hero-cta">Shop Now</a>
     </section>
     <section id="collection" class="section">
       <p class="eyebrow">Collection</p>
@@ -122,7 +121,8 @@ const shop = layout(
     <h1>Collection</h1>
     <div class="category-bar"><span>New arrival</span><span>Shop all</span><span>Best sellers</span></div>
     <div class="grid">${productCards}</div>
-  </main>`
+  </main>`,
+  ".."
 );
 
 const shopNow = layout(
@@ -131,7 +131,8 @@ const shopNow = layout(
     <p class="eyebrow">Shop Now</p>
     <h1>New arrivals and signature pieces.</h1>
     <div class="grid">${productCards}</div>
-  </main>`
+  </main>`,
+  ".."
 );
 
 const about = layout(
@@ -143,7 +144,8 @@ const about = layout(
       <h1>Designed with restraint, made for presence.</h1>
       <p>AESTRÉLA is designed in Chicago for wardrobes that move between sharp city days, late dinners, and the small rituals that make a piece feel personal.</p>
     </div>
-  </main>`
+  </main>`,
+  ".."
 );
 
 const admin = layout(
@@ -152,7 +154,8 @@ const admin = layout(
     <p class="eyebrow">AESTRELA Admin</p>
     <h1>Admin is available on the live server.</h1>
     <p>GitHub Pages is a static preview. The Postgres admin panel, uploads, Stripe, and PayPal need a Next.js server host.</p>
-  </main>`
+  </main>`,
+  ".."
 );
 
 const css = `

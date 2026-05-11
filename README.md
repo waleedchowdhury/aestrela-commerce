@@ -35,6 +35,8 @@ npm.cmd run prisma:seed
 npm.cmd run dev
 ```
 
+Local development uses `prisma/schema.sqlserver.prisma` and the local SQL Server database in `.env`. Vercel deployment keeps using the default `prisma/schema.prisma` Postgres schema.
+
 ## Admin
 
 Open `/admin` and log in with `ADMIN_PASSWORD`.
