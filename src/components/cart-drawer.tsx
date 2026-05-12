@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { Minus, Plus, X } from "lucide-react";
 import { useState } from "react";
 import { useCart } from "@/components/cart-provider";
+import { MediaImage } from "@/components/media-image";
 
 export function CartDrawer() {
   const { items, isOpen, closeCart, updateQuantity, subtotal } = useCart();
@@ -48,7 +48,7 @@ export function CartDrawer() {
                 return (
                   <div key={key} className="grid grid-cols-[84px_1fr] gap-4">
                     <div className="relative aspect-[3/4] overflow-hidden bg-mist">
-                      <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                      <MediaImage src={item.imageUrl} alt={item.name} fill className="object-cover" />
                     </div>
                     <div>
                       <div className="flex justify-between gap-4">

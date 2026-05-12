@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { MediaImage } from "@/components/media-image";
 import type { EditorialData } from "@/lib/types";
 
 export function EditorialBlock({ editorial }: { editorial: EditorialData }) {
@@ -6,7 +6,7 @@ export function EditorialBlock({ editorial }: { editorial: EditorialData }) {
     <section className="bg-porcelain px-5 py-20 md:px-8 md:py-28">
       <div className="mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(360px,1.08fr)] xl:gap-16">
         <div className="relative aspect-[4/5] max-h-[660px] w-full overflow-hidden bg-mist">
-          <Image src={editorial.imageUrl} alt="AESTRELA editorial" fill className="object-cover" />
+          <MediaImage src={editorial.imageUrl} alt="AESTRELA editorial" fill className="object-cover" />
         </div>
         <div className="min-w-0">
           <p className="text-xs uppercase tracking-[0.32em] text-champagne">{editorial.label}</p>

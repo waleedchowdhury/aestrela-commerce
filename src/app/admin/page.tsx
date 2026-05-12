@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { isAdmin } from "@/lib/admin-auth";
+import { MediaImage } from "@/components/media-image";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/env";
 import {
@@ -110,7 +110,7 @@ function SubmitButton({ children }: { children: React.ReactNode }) {
 export default async function AdminPage({
   searchParams
 }: {
-  searchParams?: Promise<{ error?: string }>;
+  searchParams?: Promise<{ error?: string; saved?: string }>;
 }) {
   if (process.env.GITHUB_PAGES === "true") {
     return (
@@ -130,6 +130,8 @@ export default async function AdminPage({
   const admin = await isAdmin();
   const params = await searchParams;
   const invalidPassword = params?.error === "invalid";
+  const actionError = params?.error && params.error !== "invalid" ? params.error : null;
+  const actionSaved = params?.saved;
 
   if (!admin) {
     return (
@@ -171,6 +173,18 @@ export default async function AdminPage({
         {!data.connected && (
           <div className="mt-8 border border-champagne/50 bg-champagne/10 p-5 text-sm leading-7 text-ink/75">
             The database is not connected yet, so the admin is showing fallback content. Add `DATABASE_URL`, run Prisma, then these forms will write directly to your configured database.
+          </div>
+        )}
+
+        {actionError && (
+          <div className="mt-8 border border-red-900/20 bg-red-50 p-5 text-sm leading-7 text-red-900">
+            {actionError}
+          </div>
+        )}
+
+        {actionSaved && (
+          <div className="mt-8 border border-emerald-900/20 bg-emerald-50 p-5 text-sm leading-7 text-emerald-900">
+            Saved {actionSaved}. The storefront pages were refreshed.
           </div>
         )}
 
@@ -296,12 +310,15 @@ export default async function AdminPage({
             <Field label="Description">
               <textarea name="description" className="admin-field min-h-24" required />
             </Field>
-            <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
+            <div className="grid gap-4 md:grid-cols-[1fr_1fr_1fr_auto]">
               <Field label="Sizes">
                 <input name="sizes" defaultValue="S, M, L, XL, XXL" className="admin-field" />
               </Field>
               <Field label="Product image">
                 <input name="image" type="file" accept="image/*" className="admin-field" />
+              </Field>
+              <Field label="Image URL">
+                <input name="imageUrl" className="admin-field" placeholder="https://..." />
               </Field>
               <div className="flex flex-wrap items-end gap-4 pb-2">
                 <Checkbox name="isFeatured" label="Highlight" />
@@ -317,7 +334,7 @@ export default async function AdminPage({
             {data.products.map((product) => (
               <div key={product.id} className="grid gap-5 border-b thin-divider pb-6 lg:grid-cols-[120px_1fr]">
                 <div className="relative aspect-[3/4] overflow-hidden bg-mist">
-                  {product.imageUrl && <Image src={product.imageUrl} alt={product.name} fill className="object-cover" />}
+                  {product.imageUrl && <MediaImage src={product.imageUrl} alt={product.name} fill className="object-cover" />}
                 </div>
                 <form action={upsertProductAction} className="grid gap-4">
                   <input type="hidden" name="id" value={product.id} />
@@ -342,11 +359,14 @@ export default async function AdminPage({
                   <Field label="Description">
                     <textarea name="description" defaultValue={product.description} className="admin-field min-h-20" />
                   </Field>
+                  <Field label="Primary image URL">
+                    <input name="imageUrl" defaultValue={product.imageUrl} className="admin-field" />
+                  </Field>
                   <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
                     <Field label="Sizes">
                       <input name="sizes" defaultValue={product.sizes} className="admin-field" />
                     </Field>
-                    <Field label="Add another image">
+                    <Field label="Replace image">
                       <input name="image" type="file" accept="image/*" className="admin-field" />
                     </Field>
                     <div className="flex flex-wrap items-end gap-4 pb-2">

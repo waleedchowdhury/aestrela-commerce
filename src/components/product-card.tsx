@@ -1,9 +1,9 @@
 "use client";
 
-import Image from "next/image";
 import { useState } from "react";
 import { ShoppingBag } from "lucide-react";
 import { useCart } from "@/components/cart-provider";
+import { MediaImage } from "@/components/media-image";
 import type { ProductCardData } from "@/lib/types";
 
 export function ProductCard({ product }: { product: ProductCardData }) {
@@ -13,7 +13,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
   return (
     <article className="group">
       <div className="relative aspect-[3/4] overflow-hidden bg-mist">
-        <Image src={product.imageUrl} alt={product.name} fill className="object-cover transition duration-700 group-hover:scale-[1.04]" />
+        <MediaImage src={product.imageUrl} alt={product.name} fill className="object-cover transition duration-700 group-hover:scale-[1.04]" />
         {product.isFeatured && (
           <span className="absolute left-3 top-3 bg-porcelain/90 px-3 py-1 text-[10px] uppercase tracking-[0.22em] text-ink">
             Highlight

@@ -15,6 +15,29 @@ function checkbox(formData: FormData, key: string) {
   return formData.get(key) === "on";
 }
 
+function storefrontChanged() {
+  revalidatePath("/");
+  revalidatePath("/shop");
+  revalidatePath("/shop-now");
+}
+
+function slugify(value: string) {
+  return (
+    value
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "product"
+  );
+}
+
+function adminSuccess(area: string) {
+  redirect(`/admin?saved=${encodeURIComponent(area)}`);
+}
+
+function adminError(message: string) {
+  redirect(`/admin?error=${encodeURIComponent(message)}`);
+}
+
 async function requireAdmin() {
   if (!(await isAdmin())) throw new Error("Admin login required.");
 }
@@ -53,9 +76,8 @@ export async function updateAnnouncementAction(formData: FormData) {
       isActive: checkbox(formData, "isActive")
     }
   });
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath("/shop-now");
+  storefrontChanged();
+  adminSuccess("promotion");
 }
 
 export async function updateHeroAction(formData: FormData) {
@@ -84,8 +106,8 @@ export async function updateHeroAction(formData: FormData) {
       ctaHref: text(formData, "ctaHref", "/shop")
     }
   });
-  revalidatePath("/");
-  revalidatePath("/shop-now");
+  storefrontChanged();
+  adminSuccess("hero");
 }
 
 export async function updateEditorialAction(formData: FormData) {
@@ -109,9 +131,9 @@ export async function updateEditorialAction(formData: FormData) {
       imageUrl: upload ?? text(formData, "imageUrl")
     }
   });
-  revalidatePath("/");
   revalidatePath("/about");
-  revalidatePath("/shop-now");
+  storefrontChanged();
+  adminSuccess("editorial");
 }
 
 export async function updateFooterAction(formData: FormData) {
@@ -136,61 +158,86 @@ export async function updateFooterAction(formData: FormData) {
       instagramUrl: text(formData, "instagramUrl", "#")
     }
   });
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath("/shop-now");
+  storefrontChanged();
+  adminSuccess("footer");
 }
 
 export async function upsertProductAction(formData: FormData) {
   await requireAdmin();
-  const id = text(formData, "id");
-  const slug = text(formData, "slug") || text(formData, "name").toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const upload = await saveUpload(formData.get("image") as File | null, "products");
-  const sizes = text(formData, "sizes", "S,M,L,XL,XXL")
-    .split(",")
-    .map((size) => size.trim().toUpperCase())
-    .filter(Boolean);
+  try {
+    const id = text(formData, "id");
+    const name = text(formData, "name");
+    const baseSlug = slugify(text(formData, "slug") || name);
+    let slug = baseSlug;
+    let suffix = 2;
 
-  const data = {
-    slug,
-    name: text(formData, "name"),
-    description: text(formData, "description"),
-    price: text(formData, "price", "0"),
-    category: text(formData, "category", "Shop all"),
-    isFeatured: checkbox(formData, "isFeatured"),
-    isNewArrival: checkbox(formData, "isNewArrival"),
-    isBestSeller: checkbox(formData, "isBestSeller"),
-    isActive: checkbox(formData, "isActive")
-  };
+    while (true) {
+      const existing = await prisma.product.findUnique({ where: { slug } });
+      if (!existing || existing.id === id) break;
+      slug = `${baseSlug}-${suffix}`;
+      suffix += 1;
+    }
 
-  const product = id
-    ? await prisma.product.update({ where: { id }, data })
-    : await prisma.product.create({ data });
+    const upload = await saveUpload(formData.get("image") as File | null, "products");
+    const imageUrl = upload ?? text(formData, "imageUrl");
+    const sizes = text(formData, "sizes", "S,M,L,XL,XXL")
+      .split(",")
+      .map((size) => size.trim().toUpperCase())
+      .filter(Boolean);
 
-  if (upload) {
-    await prisma.productImage.create({
-      data: {
-        productId: product.id,
-        url: upload,
-        alt: product.name
+    const data = {
+      slug,
+      name,
+      description: text(formData, "description"),
+      price: text(formData, "price", "0"),
+      category: text(formData, "category", "Shop all"),
+      isFeatured: checkbox(formData, "isFeatured"),
+      isNewArrival: checkbox(formData, "isNewArrival"),
+      isBestSeller: checkbox(formData, "isBestSeller"),
+      isActive: checkbox(formData, "isActive")
+    };
+
+    const product = id ? await prisma.product.update({ where: { id }, data }) : await prisma.product.create({ data });
+
+    if (imageUrl) {
+      const primaryImage = await prisma.productImage.findFirst({
+        where: { productId: product.id },
+        orderBy: { sortOrder: "asc" }
+      });
+
+      if (primaryImage) {
+        await prisma.productImage.update({
+          where: { id: primaryImage.id },
+          data: { url: imageUrl, alt: product.name }
+        });
+      } else {
+        await prisma.productImage.create({
+          data: {
+            productId: product.id,
+            url: imageUrl,
+            alt: product.name
+          }
+        });
       }
+    }
+
+    await prisma.productVariant.deleteMany({ where: { productId: product.id } });
+    await prisma.productVariant.createMany({
+      data: (sizes.length ? sizes : ["S", "M", "L", "XL", "XXL"]).map((size) => ({ productId: product.id, size, stock: 25 }))
     });
+
+    storefrontChanged();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Product could not be saved.";
+    adminError(message);
   }
 
-  await prisma.productVariant.deleteMany({ where: { productId: product.id } });
-  await prisma.productVariant.createMany({
-    data: sizes.map((size) => ({ productId: product.id, size, stock: 25 }))
-  });
-
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath("/shop-now");
+  adminSuccess("product");
 }
 
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   await prisma.product.delete({ where: { id: text(formData, "id") } });
-  revalidatePath("/");
-  revalidatePath("/shop");
-  revalidatePath("/shop-now");
+  storefrontChanged();
+  adminSuccess("product removed");
 }
