@@ -36,7 +36,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem("aestrela-cart");
-    if (stored) setItems(JSON.parse(stored));
+    if (!stored) return;
+
+    try {
+      setItems(JSON.parse(stored));
+    } catch {
+      window.localStorage.removeItem("aestrela-cart");
+    }
   }, []);
 
   useEffect(() => {

@@ -14,6 +14,34 @@ function toNumber(value: unknown) {
   return typeof value === "number" ? value : Number(value ?? 0);
 }
 
+function mapProduct(product: {
+  id: string;
+  slug: string;
+  name: string;
+  description: string;
+  price: unknown;
+  category: string;
+  isFeatured: boolean;
+  isNewArrival: boolean;
+  isBestSeller: boolean;
+  images: { url: string }[];
+  variants: { size: string }[];
+}): ProductCardData {
+  return {
+    id: product.id,
+    slug: product.slug,
+    name: product.name,
+    description: product.description,
+    price: toNumber(product.price),
+    category: product.category,
+    isFeatured: product.isFeatured,
+    isNewArrival: product.isNewArrival,
+    isBestSeller: product.isBestSeller,
+    imageUrl: product.images[0]?.url ?? fallbackProducts[0].imageUrl,
+    sizes: product.variants.map((variant) => variant.size)
+  };
+}
+
 export async function getProducts(): Promise<ProductCardData[]> {
   if (!isDatabaseConfigured()) return fallbackProducts;
 
@@ -29,21 +57,29 @@ export async function getProducts(): Promise<ProductCardData[]> {
 
     if (!products.length) return fallbackProducts;
 
-    return products.map((product) => ({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      description: product.description,
-      price: toNumber(product.price),
-      category: product.category,
-      isFeatured: product.isFeatured,
-      isNewArrival: product.isNewArrival,
-      isBestSeller: product.isBestSeller,
-      imageUrl: product.images[0]?.url ?? fallbackProducts[0].imageUrl,
-      sizes: product.variants.map((variant) => variant.size)
-    }));
+    return products.map(mapProduct);
   } catch {
     return fallbackProducts;
+  }
+}
+
+export async function getProductBySlug(slug: string): Promise<ProductCardData | null> {
+  if (!isDatabaseConfigured()) {
+    return fallbackProducts.find((product) => product.slug === slug) ?? null;
+  }
+
+  try {
+    const product = await prisma.product.findFirst({
+      where: { slug, isActive: true },
+      include: {
+        images: { orderBy: { sortOrder: "asc" } },
+        variants: { where: { stock: { gt: 0 } }, orderBy: { size: "asc" } }
+      }
+    });
+
+    return product ? mapProduct(product) : null;
+  } catch {
+    return fallbackProducts.find((product) => product.slug === slug) ?? null;
   }
 }
 

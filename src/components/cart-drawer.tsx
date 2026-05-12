@@ -16,9 +16,13 @@ export function CartDrawer() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ items })
     });
-    const data = await response.json();
+    const data = (await response.json().catch(() => null)) as { error?: string; url?: string } | null;
     if (!response.ok) {
-      setStatus(data.error ?? "Checkout is not configured yet.");
+      setStatus(data?.error ?? "Checkout is not configured yet.");
+      return;
+    }
+    if (!data?.url) {
+      setStatus("Checkout did not return a payment link.");
       return;
     }
     window.location.href = data.url;

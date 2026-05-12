@@ -18,7 +18,7 @@ export function AnnouncementBar({ announcement }: { announcement: AnnouncementDa
   );
 
   return (
-    <div className="fixed left-0 top-0 z-50 h-9 w-full overflow-hidden bg-champagne text-ink shadow-[0_1px_0_rgba(11,31,53,0.18)]">
+    <div className="fixed left-0 top-0 z-50 h-9 w-full overflow-hidden bg-ink text-pearl shadow-[0_1px_0_rgba(247,243,236,0.16)]">
       {announcement.href ? (
         <Link href={announcement.href} className="flex h-full items-center whitespace-nowrap">
           {content}

@@ -31,7 +31,7 @@ export function Header({ announcement }: { announcement: AnnouncementData }) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         className={`fixed left-0 top-9 z-40 w-full transition duration-300 ${
-          active ? "bg-ink text-pearl shadow-soft" : "bg-transparent text-pearl"
+          active ? "bg-white text-ink shadow-soft" : "bg-transparent text-pearl"
         }`}
       >
         <nav className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto_1fr] items-center px-5 md:px-8">
@@ -53,7 +53,7 @@ export function Header({ announcement }: { announcement: AnnouncementData }) {
               alt="AESTRÉLA"
               fill
               priority
-              className={`object-contain transition duration-300 ${active ? "brightness-0 invert" : ""}`}
+              className={`object-contain transition duration-300 ${active ? "brightness-0" : "brightness-0 invert"}`}
             />
           </Link>
 
