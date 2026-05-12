@@ -38,6 +38,7 @@ function mapProduct(product: {
     isNewArrival: product.isNewArrival,
     isBestSeller: product.isBestSeller,
     imageUrl: product.images[0]?.url ?? fallbackProducts[0].imageUrl,
+    images: product.images.map((image) => image.url),
     sizes: product.variants.map((variant) => variant.size)
   };
 }

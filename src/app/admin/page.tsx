@@ -31,6 +31,7 @@ async function getAdminData() {
       products: fallbackProducts.map((product) => ({
         ...product,
         isActive: true,
+        imageUrls: product.images.join("\n"),
         sizes: product.sizes.join(", ")
       }))
     };
@@ -66,6 +67,7 @@ async function getAdminData() {
         isBestSeller: product.isBestSeller,
         isActive: product.isActive,
         imageUrl: product.images[0]?.url ?? "",
+        imageUrls: product.images.map((image) => image.url).join("\n"),
         sizes: product.variants.map((variant) => variant.size).join(", ")
       }))
     };
@@ -79,6 +81,7 @@ async function getAdminData() {
       products: fallbackProducts.map((product) => ({
         ...product,
         isActive: true,
+        imageUrls: product.images.join("\n"),
         sizes: product.sizes.join(", ")
       }))
     };
@@ -320,12 +323,22 @@ export default async function AdminPage({
               <Field label="Image URL">
                 <input name="imageUrl" className="admin-field" placeholder="https://..." />
               </Field>
-              <div className="flex flex-wrap items-end gap-4 pb-2">
-                <Checkbox name="isFeatured" label="Highlight" />
-                <Checkbox name="isNewArrival" label="New" />
-                <Checkbox name="isBestSeller" label="Best seller" />
-                <Checkbox name="isActive" label="Active" defaultChecked />
-              </div>
+              <Field label="Gallery uploads">
+                <input name="images" type="file" accept="image/*" multiple className="admin-field" />
+              </Field>
+            </div>
+            <Field label="Gallery image URLs">
+              <textarea
+                name="imageUrls"
+                className="admin-field min-h-24"
+                placeholder="Add up to 8 https:// image URLs, one per line"
+              />
+            </Field>
+            <div className="flex flex-wrap items-end gap-4 pb-2">
+              <Checkbox name="isFeatured" label="Highlight" />
+              <Checkbox name="isNewArrival" label="New" />
+              <Checkbox name="isBestSeller" label="Best seller" />
+              <Checkbox name="isActive" label="Active" defaultChecked />
             </div>
             <SubmitButton>Add product</SubmitButton>
           </form>
@@ -333,8 +346,15 @@ export default async function AdminPage({
           <div className="mt-8 grid gap-6">
             {data.products.map((product) => (
               <div key={product.id} className="grid gap-5 border-b thin-divider pb-6 lg:grid-cols-[120px_1fr]">
-                <div className="relative aspect-[3/4] overflow-hidden bg-mist">
-                  {product.imageUrl && <MediaImage src={product.imageUrl} alt={product.name} fill className="object-cover" />}
+                <div>
+                  <div className="relative aspect-[3/4] overflow-hidden bg-mist">
+                    {product.imageUrl && <MediaImage src={product.imageUrl} alt={product.name} fill className="object-cover" />}
+                  </div>
+                  {product.imageUrls && (
+                    <p className="mt-2 text-center text-[10px] uppercase tracking-[0.18em] text-ink/45">
+                      {product.imageUrls.split("\n").filter(Boolean).length} images
+                    </p>
+                  )}
                 </div>
                 <form action={upsertProductAction} className="grid gap-4">
                   <input type="hidden" name="id" value={product.id} />
@@ -362,19 +382,30 @@ export default async function AdminPage({
                   <Field label="Primary image URL">
                     <input name="imageUrl" defaultValue={product.imageUrl} className="admin-field" />
                   </Field>
+                  <Field label="Gallery image URLs">
+                    <textarea
+                      name="imageUrls"
+                      defaultValue={product.imageUrls}
+                      className="admin-field min-h-28"
+                      placeholder="Keep up to 8 https:// image URLs, one per line"
+                    />
+                  </Field>
                   <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
                     <Field label="Sizes">
                       <input name="sizes" defaultValue={product.sizes} className="admin-field" />
                     </Field>
-                    <Field label="Replace image">
+                    <Field label="Replace primary image">
                       <input name="image" type="file" accept="image/*" className="admin-field" />
                     </Field>
-                    <div className="flex flex-wrap items-end gap-4 pb-2">
-                      <Checkbox name="isFeatured" label="Highlight" defaultChecked={product.isFeatured} />
-                      <Checkbox name="isNewArrival" label="New" defaultChecked={product.isNewArrival} />
-                      <Checkbox name="isBestSeller" label="Best seller" defaultChecked={product.isBestSeller} />
-                      <Checkbox name="isActive" label="Active" defaultChecked={product.isActive} />
-                    </div>
+                    <Field label="Add gallery uploads">
+                      <input name="images" type="file" accept="image/*" multiple className="admin-field" />
+                    </Field>
+                  </div>
+                  <div className="flex flex-wrap items-end gap-4 pb-2">
+                    <Checkbox name="isFeatured" label="Highlight" defaultChecked={product.isFeatured} />
+                    <Checkbox name="isNewArrival" label="New" defaultChecked={product.isNewArrival} />
+                    <Checkbox name="isBestSeller" label="Best seller" defaultChecked={product.isBestSeller} />
+                    <Checkbox name="isActive" label="Active" defaultChecked={product.isActive} />
                   </div>
                   <div className="flex gap-3">
                     <SubmitButton>Update</SubmitButton>

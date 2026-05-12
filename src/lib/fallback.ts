@@ -56,6 +56,9 @@ export const fallbackProducts: ProductCardData[] = [
     isNewArrival: false,
     isBestSeller: true,
     imageUrl: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=85",
+    images: [
+      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1200&q=85"
+    ],
     sizes: ["S", "M", "L", "XL", "XXL"]
   },
   {
@@ -69,6 +72,9 @@ export const fallbackProducts: ProductCardData[] = [
     isNewArrival: true,
     isBestSeller: false,
     imageUrl: "https://images.unsplash.com/photo-1520975867597-0af37a22e31e?auto=format&fit=crop&w=1200&q=85",
+    images: [
+      "https://images.unsplash.com/photo-1520975867597-0af37a22e31e?auto=format&fit=crop&w=1200&q=85"
+    ],
     sizes: ["S", "M", "L", "XL", "XXL"]
   },
   {
@@ -82,6 +88,9 @@ export const fallbackProducts: ProductCardData[] = [
     isNewArrival: false,
     isBestSeller: false,
     imageUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85",
+    images: [
+      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=85"
+    ],
     sizes: ["S", "M", "L", "XL", "XXL"]
   },
   {
@@ -95,6 +104,9 @@ export const fallbackProducts: ProductCardData[] = [
     isNewArrival: false,
     isBestSeller: false,
     imageUrl: "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=85",
+    images: [
+      "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1200&q=85"
+    ],
     sizes: ["S", "M", "L", "XL", "XXL"]
   }
 ];

@@ -40,3 +40,14 @@ export async function saveUpload(file: File | null, folder = "general") {
   await writeFile(target, bytes);
   return `/uploads/${folder}/${filename}`;
 }
+
+export async function saveUploads(files: File[], folder = "general") {
+  const urls: string[] = [];
+
+  for (const file of files) {
+    const url = await saveUpload(file, folder);
+    if (url) urls.push(url);
+  }
+
+  return urls;
+}

@@ -2,6 +2,9 @@ import { notFound } from "next/navigation";
 import { ProductDetail } from "@/components/product-detail";
 import { getProductBySlug, getProducts } from "@/lib/store";
 
+export const revalidate = 60;
+export const dynamicParams = true;
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const product = await getProductBySlug(slug);

@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clearAdminCookie, isAdmin, normalizedAdminPassword, setAdminCookie } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
-import { saveUpload } from "@/lib/upload";
+import { saveUpload, saveUploads } from "@/lib/upload";
 
 function text(formData: FormData, key: string, fallback = "") {
   const value = formData.get(key);
@@ -15,10 +15,33 @@ function checkbox(formData: FormData, key: string) {
   return formData.get(key) === "on";
 }
 
-function storefrontChanged() {
+function files(formData: FormData, key: string) {
+  return formData.getAll(key).filter((value): value is File => value instanceof File && value.size > 0);
+}
+
+function secureImageUrl(value: string) {
+  if (!value) return "";
+  if (value.startsWith("https://") || value.startsWith("data:image/") || value.startsWith("/")) return value;
+  throw new Error("Image URLs must use https:// so the live site stays secure.");
+}
+
+function imageUrls(formData: FormData) {
+  return text(formData, "imageUrls")
+    .split(/\r?\n|,/)
+    .map((url) => secureImageUrl(url.trim()))
+    .filter(Boolean);
+}
+
+function uniqueUrls(urls: string[]) {
+  return Array.from(new Set(urls.filter(Boolean)));
+}
+
+function storefrontChanged(slug?: string, previousSlug?: string) {
   revalidatePath("/");
   revalidatePath("/shop");
   revalidatePath("/shop-now");
+  if (slug) revalidatePath(`/products/${slug}`);
+  if (previousSlug && previousSlug !== slug) revalidatePath(`/products/${previousSlug}`);
 }
 
 function slugify(value: string) {
@@ -167,6 +190,7 @@ export async function upsertProductAction(formData: FormData) {
   try {
     const id = text(formData, "id");
     const name = text(formData, "name");
+    const previous = id ? await prisma.product.findUnique({ where: { id }, include: { images: true } }) : null;
     const baseSlug = slugify(text(formData, "slug") || name);
     let slug = baseSlug;
     let suffix = 2;
@@ -179,7 +203,9 @@ export async function upsertProductAction(formData: FormData) {
     }
 
     const upload = await saveUpload(formData.get("image") as File | null, "products");
-    const imageUrl = upload ?? text(formData, "imageUrl");
+    const uploadedGallery = await saveUploads(files(formData, "images"), "products");
+    const primaryUrl = upload ?? secureImageUrl(text(formData, "imageUrl"));
+    const galleryUrls = uniqueUrls([primaryUrl, ...imageUrls(formData), ...uploadedGallery]);
     const sizes = text(formData, "sizes", "S,M,L,XL,XXL")
       .split(",")
       .map((size) => size.trim().toUpperCase())
@@ -199,26 +225,18 @@ export async function upsertProductAction(formData: FormData) {
 
     const product = id ? await prisma.product.update({ where: { id }, data }) : await prisma.product.create({ data });
 
-    if (imageUrl) {
-      const primaryImage = await prisma.productImage.findFirst({
-        where: { productId: product.id },
-        orderBy: { sortOrder: "asc" }
+    if (galleryUrls.length) {
+      await prisma.productImage.deleteMany({ where: { productId: product.id } });
+      await prisma.productImage.createMany({
+        data: galleryUrls.slice(0, 8).map((url, index) => ({
+          productId: product.id,
+          url,
+          alt: `${product.name} view ${index + 1}`,
+          sortOrder: index
+        }))
       });
-
-      if (primaryImage) {
-        await prisma.productImage.update({
-          where: { id: primaryImage.id },
-          data: { url: imageUrl, alt: product.name }
-        });
-      } else {
-        await prisma.productImage.create({
-          data: {
-            productId: product.id,
-            url: imageUrl,
-            alt: product.name
-          }
-        });
-      }
+    } else if (!previous?.images.length) {
+      await prisma.productImage.deleteMany({ where: { productId: product.id } });
     }
 
     await prisma.productVariant.deleteMany({ where: { productId: product.id } });
@@ -226,7 +244,7 @@ export async function upsertProductAction(formData: FormData) {
       data: (sizes.length ? sizes : ["S", "M", "L", "XL", "XXL"]).map((size) => ({ productId: product.id, size, stock: 25 }))
     });
 
-    storefrontChanged();
+    storefrontChanged(product.slug, previous?.slug);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Product could not be saved.";
     adminError(message);
@@ -237,7 +255,9 @@ export async function upsertProductAction(formData: FormData) {
 
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
-  await prisma.product.delete({ where: { id: text(formData, "id") } });
-  storefrontChanged();
+  const id = text(formData, "id");
+  const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
+  await prisma.product.delete({ where: { id } });
+  storefrontChanged(undefined, product?.slug);
   adminSuccess("product removed");
 }

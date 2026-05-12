@@ -9,6 +9,7 @@ export type ProductCardData = {
   isNewArrival: boolean;
   isBestSeller: boolean;
   imageUrl: string;
+  images: string[];
   sizes: string[];
 };
 

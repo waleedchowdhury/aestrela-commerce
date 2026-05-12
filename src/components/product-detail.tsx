@@ -8,14 +8,35 @@ import type { ProductCardData } from "@/lib/types";
 
 export function ProductDetail({ product }: { product: ProductCardData }) {
   const [size, setSize] = useState(product.sizes[0] ?? "M");
+  const gallery = product.images.length ? product.images : [product.imageUrl];
+  const [activeImage, setActiveImage] = useState(gallery[0]);
   const { addItem } = useCart();
   const sizes = product.sizes.length ? product.sizes : ["S", "M", "L", "XL", "XXL"];
 
   return (
     <section className="bg-porcelain px-5 pb-20 pt-[148px] md:px-8 md:pb-28">
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] lg:gap-16">
-        <div className="relative aspect-[4/5] overflow-hidden bg-mist lg:sticky lg:top-36">
-          <MediaImage src={product.imageUrl} alt={product.name} fill priority className="object-cover" />
+        <div className="lg:sticky lg:top-36 lg:self-start">
+          <div className="relative aspect-[4/5] overflow-hidden bg-mist">
+            <MediaImage src={activeImage} alt={product.name} fill priority className="object-cover" />
+          </div>
+          {gallery.length > 1 && (
+            <div className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-6 lg:grid-cols-4">
+              {gallery.map((image, index) => (
+                <button
+                  key={`${image}-${index}`}
+                  type="button"
+                  onClick={() => setActiveImage(image)}
+                  aria-label={`View ${product.name} angle ${index + 1}`}
+                  className={`relative aspect-[3/4] overflow-hidden bg-mist transition ${
+                    activeImage === image ? "ring-2 ring-ink ring-offset-2 ring-offset-porcelain" : "opacity-70 hover:opacity-100"
+                  }`}
+                >
+                  <MediaImage src={image} alt={`${product.name} angle ${index + 1}`} fill className="object-cover" />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col justify-center">
