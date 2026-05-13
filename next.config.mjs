@@ -20,6 +20,23 @@ const nextConfig = {
       }
     ]
   },
+  async redirects() {
+    if (isGitHubPages) return [];
+
+    return [
+      {
+        source: "/:path*",
+        has: [
+          {
+            type: "host",
+            value: "aestrelaglobal.com"
+          }
+        ],
+        destination: "https://www.aestrelaglobal.com/:path*",
+        permanent: true
+      }
+    ];
+  },
   async headers() {
     if (isGitHubPages) return [];
 
