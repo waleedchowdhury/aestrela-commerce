@@ -44,6 +44,7 @@ async function getAdminData() {
       prisma.editorialContent.findUnique({ where: { id: "story" } }),
       prisma.footerContent.findUnique({ where: { id: "footer" } }),
       prisma.product.findMany({
+        where: { isActive: true },
         orderBy: { updatedAt: "desc" },
         include: { images: { orderBy: { sortOrder: "asc" } }, variants: true }
       })
@@ -356,67 +357,69 @@ export default async function AdminPage({
                     </p>
                   )}
                 </div>
-                <form action={upsertProductAction} className="grid gap-4">
-                  <input type="hidden" name="id" value={product.id} />
-                  <div className="grid gap-4 md:grid-cols-4">
-                    <Field label="Name">
-                      <input name="name" defaultValue={product.name} className="admin-field" />
+                <div className="grid gap-4">
+                  <form action={upsertProductAction} className="grid gap-4">
+                    <input type="hidden" name="id" value={product.id} />
+                    <div className="grid gap-4 md:grid-cols-4">
+                      <Field label="Name">
+                        <input name="name" defaultValue={product.name} className="admin-field" />
+                      </Field>
+                      <Field label="Slug">
+                        <input name="slug" defaultValue={product.slug} className="admin-field" />
+                      </Field>
+                      <Field label="Price">
+                        <input name="price" type="number" min="0" step="0.01" defaultValue={product.price} className="admin-field" />
+                      </Field>
+                      <Field label="Category">
+                        <select name="category" defaultValue={product.category} className="admin-field">
+                          <option>New arrival</option>
+                          <option>Shop all</option>
+                          <option>Best sellers</option>
+                        </select>
+                      </Field>
+                    </div>
+                    <Field label="Description">
+                      <textarea name="description" defaultValue={product.description} className="admin-field min-h-20" />
                     </Field>
-                    <Field label="Slug">
-                      <input name="slug" defaultValue={product.slug} className="admin-field" />
+                    <Field label="Primary image URL">
+                      <input name="imageUrl" defaultValue={product.imageUrl} className="admin-field" />
                     </Field>
-                    <Field label="Price">
-                      <input name="price" type="number" min="0" step="0.01" defaultValue={product.price} className="admin-field" />
+                    <Field label="Gallery image URLs">
+                      <textarea
+                        name="imageUrls"
+                        defaultValue={product.imageUrls}
+                        className="admin-field min-h-28"
+                        placeholder="Keep up to 8 https:// image URLs, one per line"
+                      />
                     </Field>
-                    <Field label="Category">
-                      <select name="category" defaultValue={product.category} className="admin-field">
-                        <option>New arrival</option>
-                        <option>Shop all</option>
-                        <option>Best sellers</option>
-                      </select>
-                    </Field>
-                  </div>
-                  <Field label="Description">
-                    <textarea name="description" defaultValue={product.description} className="admin-field min-h-20" />
-                  </Field>
-                  <Field label="Primary image URL">
-                    <input name="imageUrl" defaultValue={product.imageUrl} className="admin-field" />
-                  </Field>
-                  <Field label="Gallery image URLs">
-                    <textarea
-                      name="imageUrls"
-                      defaultValue={product.imageUrls}
-                      className="admin-field min-h-28"
-                      placeholder="Keep up to 8 https:// image URLs, one per line"
-                    />
-                  </Field>
-                  <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
-                    <Field label="Sizes">
-                      <input name="sizes" defaultValue={product.sizes} className="admin-field" />
-                    </Field>
-                    <Field label="Replace primary image">
-                      <input name="image" type="file" accept="image/*" className="admin-field" />
-                    </Field>
-                    <Field label="Add gallery uploads">
-                      <input name="images" type="file" accept="image/*" multiple className="admin-field" />
-                    </Field>
-                  </div>
-                  <div className="flex flex-wrap items-end gap-4 pb-2">
-                    <Checkbox name="isFeatured" label="Highlight" defaultChecked={product.isFeatured} />
-                    <Checkbox name="isNewArrival" label="New" defaultChecked={product.isNewArrival} />
-                    <Checkbox name="isBestSeller" label="Best seller" defaultChecked={product.isBestSeller} />
-                    <Checkbox name="isActive" label="Active" defaultChecked={product.isActive} />
-                  </div>
-                  <div className="flex gap-3">
-                    <SubmitButton>Update</SubmitButton>
-                    <button
-                      formAction={deleteProductAction}
-                      className="border border-red-900/30 px-5 py-3 text-xs uppercase tracking-[0.2em] text-red-900"
-                    >
-                      Remove
+                    <div className="grid gap-4 md:grid-cols-[1fr_1fr_auto]">
+                      <Field label="Sizes">
+                        <input name="sizes" defaultValue={product.sizes} className="admin-field" />
+                      </Field>
+                      <Field label="Replace primary image">
+                        <input name="image" type="file" accept="image/*" className="admin-field" />
+                      </Field>
+                      <Field label="Add gallery uploads">
+                        <input name="images" type="file" accept="image/*" multiple className="admin-field" />
+                      </Field>
+                    </div>
+                    <div className="flex flex-wrap items-end gap-4 pb-2">
+                      <Checkbox name="isFeatured" label="Highlight" defaultChecked={product.isFeatured} />
+                      <Checkbox name="isNewArrival" label="New" defaultChecked={product.isNewArrival} />
+                      <Checkbox name="isBestSeller" label="Best seller" defaultChecked={product.isBestSeller} />
+                      <Checkbox name="isActive" label="Active" defaultChecked={product.isActive} />
+                    </div>
+                    <div>
+                      <SubmitButton>Update</SubmitButton>
+                    </div>
+                  </form>
+                  <form action={deleteProductAction}>
+                    <input type="hidden" name="id" value={product.id} />
+                    <button className="border border-red-900/30 px-5 py-3 text-xs uppercase tracking-[0.2em] text-red-900">
+                      Remove from store
                     </button>
-                  </div>
-                </form>
+                  </form>
+                </div>
               </div>
             ))}
           </div>

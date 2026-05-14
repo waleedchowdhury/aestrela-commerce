@@ -258,32 +258,29 @@ export async function deleteProductAction(formData: FormData) {
   const id = text(formData, "id");
   if (!id) adminError("Product could not be removed because its ID was missing.");
 
-  let previousSlug: string | undefined;
-
   try {
-    const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
-    if (product) {
-      try {
-        await prisma.product.delete({ where: { id } });
-      } catch {
-        await prisma.product.update({
-          where: { id },
-          data: {
-            isActive: false,
-            isFeatured: false,
-            isNewArrival: false,
-            isBestSeller: false
+    const product = await prisma.product.update({
+      where: { id },
+      data: {
+        isActive: false,
+        isFeatured: false,
+        isNewArrival: false,
+        isBestSeller: false,
+        variants: {
+          updateMany: {
+            where: {},
+            data: { stock: 0 }
           }
-        });
-      }
+        }
+      },
+      select: { slug: true }
+    });
 
-      previousSlug = product.slug;
-    }
+    storefrontChanged(undefined, product.slug);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Product could not be removed.";
     adminError(message);
   }
 
-  storefrontChanged(undefined, previousSlug);
   adminSuccess("product removed");
 }
