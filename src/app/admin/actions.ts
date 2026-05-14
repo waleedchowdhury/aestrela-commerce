@@ -53,11 +53,11 @@ function slugify(value: string) {
   );
 }
 
-function adminSuccess(area: string) {
+function adminSuccess(area: string): never {
   redirect(`/admin?saved=${encodeURIComponent(area)}`);
 }
 
-function adminError(message: string) {
+function adminError(message: string): never {
   redirect(`/admin?error=${encodeURIComponent(message)}`);
 }
 
@@ -256,8 +256,34 @@ export async function upsertProductAction(formData: FormData) {
 export async function deleteProductAction(formData: FormData) {
   await requireAdmin();
   const id = text(formData, "id");
-  const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
-  await prisma.product.delete({ where: { id } });
-  storefrontChanged(undefined, product?.slug);
+  if (!id) adminError("Product could not be removed because its ID was missing.");
+
+  let previousSlug: string | undefined;
+
+  try {
+    const product = await prisma.product.findUnique({ where: { id }, select: { slug: true } });
+    if (product) {
+      try {
+        await prisma.product.delete({ where: { id } });
+      } catch {
+        await prisma.product.update({
+          where: { id },
+          data: {
+            isActive: false,
+            isFeatured: false,
+            isNewArrival: false,
+            isBestSeller: false
+          }
+        });
+      }
+
+      previousSlug = product.slug;
+    }
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Product could not be removed.";
+    adminError(message);
+  }
+
+  storefrontChanged(undefined, previousSlug);
   adminSuccess("product removed");
 }
