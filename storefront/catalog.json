@@ -1,8 +1,62 @@
 [
-  {"id":"be-cool","name":"Be Cool Tee","file":"Sample1.jpeg","color":"Black","category":"Illustrated","description":"A black graphic tee featuring an orange cat against a blue panel and the words ‘Be Cool or Leave’. The back is plain.","price":null,"sizes":[]},
-  {"id":"wash-away","name":"Wash Away Tee","file":"sample2.jpeg","color":"Black","category":"Illustrated","description":"A black graphic tee with a frog illustration, a purple panel and ‘Remember to wash away your sins’ lettering. The back is plain.","price":null,"sizes":[]},
-  {"id":"chicago-ivory","name":"Chicago Ivory Tee","file":"sample3.jpeg","color":"Ivory","category":"City","description":"An ivory tee with a small orange bear graphic on the front and a bold Chicago skyline print on the back.","price":null,"sizes":[]},
-  {"id":"chicago-black","name":"Chicago Black Tee","file":"sample4.jpeg","color":"Black","category":"City","description":"A black tee with a plain front and a retro Chicago skyline and waterfront graphic on the back.","price":null,"sizes":[]},
-  {"id":"superman","name":"Superman Tee","file":"sample5.jpeg","color":"Black","category":"Comic","description":"A black tee with a Superman emblem on the front and a colorful comic collage on the back.","price":null,"sizes":[]},
-  {"id":"spider-man","name":"Spider-Man Tee","file":"sample6.jpeg","color":"Ivory","category":"Comic","description":"An ivory tee with a red spider emblem on the front and a large Spider-Man illustration on the back.","price":null,"sizes":[]}
+  {
+    "id": "be-cool",
+    "name": "Be Cool Tee",
+    "file": "Sample1.jpeg",
+    "color": "Black",
+    "category": "Illustrated",
+    "description": "A black graphic tee featuring an orange cat against a blue panel and the words ‘Be Cool or Leave’. The back is plain.",
+    "price": 599,
+    "sizes": []
+  },
+  {
+    "id": "wash-away",
+    "name": "Wash Away Tee",
+    "file": "sample2.jpeg",
+    "color": "Black",
+    "category": "Illustrated",
+    "description": "A black graphic tee with a frog illustration, a purple panel and ‘Remember to wash away your sins’ lettering. The back is plain.",
+    "price": 599,
+    "sizes": []
+  },
+  {
+    "id": "chicago-ivory",
+    "name": "Chicago Ivory Tee",
+    "file": "sample3.jpeg",
+    "color": "Ivory",
+    "category": "City",
+    "description": "An ivory tee with a small orange bear graphic on the front and a bold Chicago skyline print on the back.",
+    "price": 599,
+    "sizes": []
+  },
+  {
+    "id": "chicago-black",
+    "name": "Chicago Black Tee",
+    "file": "sample4.jpeg",
+    "color": "Black",
+    "category": "City",
+    "description": "A black tee with a plain front and a retro Chicago skyline and waterfront graphic on the back.",
+    "price": 599,
+    "sizes": []
+  },
+  {
+    "id": "superman",
+    "name": "Superman Tee",
+    "file": "sample5.jpeg",
+    "color": "Black",
+    "category": "Comic",
+    "description": "A black tee with a Superman emblem on the front and a colorful comic collage on the back.",
+    "price": 599,
+    "sizes": []
+  },
+  {
+    "id": "spider-man",
+    "name": "Spider-Man Tee",
+    "file": "sample6.jpeg",
+    "color": "Ivory",
+    "category": "Comic",
+    "description": "An ivory tee with a red spider emblem on the front and a large Spider-Man illustration on the back.",
+    "price": 599,
+    "sizes": []
+  }
 ]
