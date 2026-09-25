@@ -12,9 +12,8 @@ function config() {
   const email = e.STORE_SUPPORT_EMAIL || '';
   const secret = e.ORDER_TOKEN_SECRET || e.ADMIN_COOKIE_SECRET || '';
   const adminHash = e.ORDER_ADMIN_KEY_SHA256 || (e.ADMIN_PASSWORD ? sha(e.ADMIN_PASSWORD) : '');
-  const testMode = e.STORE_CHECKOUT_MODE === 'test';
-  const ready = e.MANUAL_CHECKOUT_ENABLED === 'true' && /^postgres(?:ql)?:\/\//.test(url || '') && /^01[3-9]\d{8}$/.test(number) && (testMode || (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) && sizes.length > 0)) && secret.length >= 32 && /^[a-f0-9]{64}$/.test(adminHash);
-  return { ready: Boolean(ready), url, number, email, secret, adminHash, sizes, testMode };
+  const ready = e.MANUAL_CHECKOUT_ENABLED === 'true' && /^postgres(?:ql)?:\/\//.test(url || '') && /^01[3-9]\d{8}$/.test(number) && secret.length >= 32 && /^[a-f0-9]{64}$/.test(adminHash);
+  return { ready: Boolean(ready), url, number, email, secret, adminHash, sizes };
 }
 function text(value, label, max, min = 1) {
   if (typeof value !== 'string' || value.trim().length < min || value.trim().length > max || /[\u0000-\u001f]/.test(value)) fail(`Enter a valid ${label}.`);
@@ -26,22 +25,22 @@ function normalizeOrder(body, c = config()) {
   const name = text(customer.name, 'name', 100, 2);
   const phone = text(customer.phone, 'Bangladesh mobile number', 14).replace(/^\+88/, '');
   if (!/^01[3-9]\d{8}$/.test(phone)) fail('Enter a valid Bangladesh mobile number.');
-  const address = c.testMode ? 'Payment test — no shipment' : text(customer.address, 'delivery address', 400, 10);
-  const district = c.testMode ? 'Test' : text(customer.district, 'district', 80, 2);
-  if (c.testMode && (!Array.isArray(body.items) || body.items.length !== 1 || body.items[0]?.id !== 'be-cool' || body.items[0]?.quantity !== 1)) fail('Test checkout accepts only one Be Cool Tee at BDT 10.00. No shipment is created.');
+  const address = text(customer.address, 'delivery address', 400, 10);
+  const district = text(customer.district, 'district', 80, 2);
   if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) fail('Your bag must contain 1–30 selections.');
   const items = [];
   for (const item of body.items) {
     const p = products.find(p => p.id === item?.id);
     if (!p || !Number.isInteger(item.quantity) || item.quantity < 1 || item.quantity > 10) fail('Your bag contains an invalid item or quantity.');
-    const sizes = c.testMode ? ['Payment test — no shipment'] : (p.sizes.length ? p.sizes : c.sizes);
-    if (!sizes.includes(item.size)) fail(`Choose an available size for ${p.name}.`);
-    if (items.some(i => i.id === p.id && i.size === item.size)) fail('Duplicate product selections. Please update your bag.');
-    items.push({ id: p.id, name: p.name, size: item.size, quantity: item.quantity, price: p.price });
+    const sizes = p.sizes.length ? p.sizes : c.sizes;
+    const size = text(item.size, 'requested size', 20);
+    if (sizes.length ? !sizes.includes(size) : !/^[a-zA-Z0-9][a-zA-Z0-9 .-]{0,19}$/.test(size)) fail(`Enter a valid requested size for ${p.name}.`);
+    if (items.some(i => i.id === p.id && i.size === size)) fail('Duplicate product selections. Please update your bag.');
+    items.push({ id: p.id, name: p.name, size, sizeNeedsConfirmation: !sizes.length, quantity: item.quantity, price: p.price });
   }
   if (items.reduce((n, i) => n + i.quantity, 0) > 30) fail('Please limit an order to 30 pieces.');
   const subtotal = items.reduce((n, i) => n + i.price * i.quantity, 0);
-  return { customer: { name, phone, address, district }, items, method: body.method, subtotal, shipping: 0, total: subtotal, currency: 'BDT', testMode: c.testMode };
+  return { customer: { name, phone, address, district }, items, method: body.method, subtotal, shipping: 0, total: subtotal, currency: 'BDT', testMode: false };
 }
 function publicOrder(order, c) {
   return { id: order.id, status: order.status, items: order.items, method: order.method, subtotal: order.subtotal, shipping: 0, total: order.total, currency: 'BDT', testMode: order.testMode, transactionId: order.transactionId || null, createdAt: order.createdAt, supportEmail: c.email,
@@ -61,7 +60,7 @@ function makeHandler(db = require('./order-store.cjs')) {
       const c = config();
       if (body.action === 'config') {
         if (c.ready) await db.ping();
-        return res.status(200).json({ enabled: c.ready, sizes: c.ready ? c.sizes : [], testMode: c.testMode, supportEmail: c.ready ? c.email : null });
+        return res.status(200).json({ enabled: c.ready, sizes: c.ready ? c.sizes : [], testMode: false, supportEmail: c.ready ? c.email : null });
       }
       if (!c.ready) fail('Checkout setup is still in progress. No payment has been requested. Please return later.', 503);
       const ip = String(req.headers['x-vercel-forwarded-for'] || req.headers['x-forwarded-for'] || req.socket?.remoteAddress || 'unknown').split(',')[0];

@@ -10,8 +10,8 @@ Production configuration:
 
 - MANUAL_CHECKOUT_ENABLED=true
 - MANUAL_PAYMENT_NUMBER: local 11-digit receiving number
-- STORE_CHECKOUT_MODE=test: only one Be Cool item for a real BDT10 payment test, explicitly no shipment. Regular bag contents are unchanged.
-- For retail, set STORE_CHECKOUT_MODE=retail, STORE_SIZES to actual comma-separated sizes, STORE_SUPPORT_EMAIL to an actual customer-care address, and confirm delivery coverage, timing and returns in storefront/build-store.cjs. Product-specific catalog sizes override STORE_SIZES.
+- Checkout accepts all six products, quantities and their server-side prices. Legacy STORE_CHECKOUT_MODE is no longer used. Existing test-order receipts retain their no-shipment labels.
+- STORE_SIZES: actual comma-separated sizes. Product-specific catalog sizes override this. When neither is supplied, checkout collects a requested size and explicitly states that availability will be confirmed by phone. Set STORE_SUPPORT_EMAIL to the real support email when provided; do not invent contact details or stock availability.
 
 No automated email notifications are installed. Orders are reviewed on the owner page. STORE_SUPPORT_EMAIL provides a contact link; notifications require a separately configured transactional email service.
 
