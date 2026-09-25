@@ -7,7 +7,12 @@
     "category": "Illustrated",
     "description": "A black graphic tee featuring an orange cat against a blue panel and the words ‘Be Cool or Leave’. The back is plain.",
     "price": 10,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   },
   {
     "id": "wash-away",
@@ -17,7 +22,12 @@
     "category": "Illustrated",
     "description": "A black graphic tee with a frog illustration, a purple panel and ‘Remember to wash away your sins’ lettering. The back is plain.",
     "price": 599,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   },
   {
     "id": "chicago-ivory",
@@ -27,7 +37,12 @@
     "category": "City",
     "description": "An ivory tee with a small orange bear graphic on the front and a bold Chicago skyline print on the back.",
     "price": 599,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   },
   {
     "id": "chicago-black",
@@ -37,7 +52,12 @@
     "category": "City",
     "description": "A black tee with a plain front and a retro Chicago skyline and waterfront graphic on the back.",
     "price": 599,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   },
   {
     "id": "superman",
@@ -47,7 +67,12 @@
     "category": "Comic",
     "description": "A black tee with a Superman emblem on the front and a colorful comic collage on the back.",
     "price": 599,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   },
   {
     "id": "spider-man",
@@ -57,6 +82,11 @@
     "category": "Comic",
     "description": "An ivory tee with a red spider emblem on the front and a large Spider-Man illustration on the back.",
     "price": 599,
-    "sizes": []
+    "sizes": [
+      "S",
+      "M",
+      "L",
+      "XL"
+    ]
   }
 ]
