@@ -19,4 +19,28 @@ $('[data-download]')?.addEventListener('click',()=>{const lines=bag.map(i=>{cons
 $('[data-clear-storage]')?.addEventListener('click',()=>{bag=[];saved=[];persist();counts();notify('Your bag and favorites have been cleared.')});
 counts();
 fetch('/catalog.json').then(r=>{if(!r.ok)throw Error('Catalog unavailable');return r.json()}).then(data=>{catalog=data;saved=saved.filter(id=>catalog.some(p=>p.id===id));bag=bag.filter(i=>catalog.some(p=>p.id===i.id)&&Number.isInteger(i.quantity)&&i.quantity>0&&i.quantity<=10&&typeof i.size==='string');counts();renderBag()}).catch(()=>{if($('[data-bag-items]'))$('[data-bag-items]').textContent='Your bag could not load. Please refresh the page.'});
-if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&'IntersectionObserver'in window){const observer=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('is-revealed');observer.unobserve(e.target)}}),{threshold:.06});$$('[data-reveal]').forEach(el=>{if(el.getBoundingClientRect().top>=innerHeight){el.classList.add('reveal-ready');observer.observe(el)}})}
+const motionPreference=matchMedia('(prefers-reduced-motion: reduce)');
+if(!motionPreference.matches&&'IntersectionObserver'in window){
+  const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      entry.target.classList.add('is-revealed');
+      observer.unobserve(entry.target);
+    }
+  }),{threshold:.06});
+  $$('.product-grid').forEach(grid=>{
+    const columns=getComputedStyle(grid).gridTemplateColumns.split(' ').length;
+    Array.from(grid.children).forEach((card,index)=>card.style.setProperty('--reveal-delay',(index%columns)*90+'ms'));
+  });
+  $$('[data-reveal]').forEach(el=>{
+    if(el.getBoundingClientRect().top>=innerHeight){
+      el.classList.add('reveal-ready');
+      observer.observe(el);
+    }
+  });
+  motionPreference.addEventListener('change',event=>{
+    if(event.matches){
+      observer.disconnect();
+      $$('.reveal-ready').forEach(el=>el.classList.add('is-revealed'));
+    }
+  });
+}
