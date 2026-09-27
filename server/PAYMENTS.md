@@ -15,4 +15,6 @@ Production configuration:
 
 No automated email notifications are installed. Orders are reviewed on the owner page. STORE_SUPPORT_EMAIL provides a contact link; notifications require a separately configured transactional email service.
 
+Product pages offer Buy now: /checkout/?product=ID&size=M&quantity=1. Direct checkout never adds, removes or pays for other bag items. The server still calculates every price. Add to bag remains available for multiple designs. Saved receipts use an order ID in the URL and require the private token retained in the browser; the URL alone cannot access an order. Refreshing a saved receipt does not place another order. Send Money is still completed by the customer in their own wallet app, followed by transaction-reference submission.
+
 Build: node storefront/build-store.cjs. Vercel installs server dependencies with npm ci --prefix server --ignore-scripts; existing Next.js source is not deployed. Test API behavior with node --test server/manual-orders.test.cjs. These tests use an in-memory test double, so also verify a live saved order separately. No real transfer should be initiated by automated tests.

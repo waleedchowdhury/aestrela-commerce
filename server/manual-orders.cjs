@@ -23,9 +23,9 @@ function normalizeOrder(body, c = config()) {
   if (!['bkash', 'nagad'].includes(body.method)) fail('Choose bKash or Nagad.');
   const customer = body.customer || {};
   const name = text(customer.name, 'name', 100, 2);
-  const phone = text(customer.phone, 'Bangladesh mobile number', 14).replace(/^\+88/, '');
+  const phone = text(customer.phone, 'Bangladesh mobile number', 24).replace(/[\s()-]/g, '').replace(/^\+?88/, '');
   if (!/^01[3-9]\d{8}$/.test(phone)) fail('Enter a valid Bangladesh mobile number.');
-  const address = text(customer.address, 'delivery address', 400, 10);
+  const address = text(typeof customer.address === 'string' ? customer.address.replace(/[\r\n]+/g, ' ') : customer.address, 'delivery address', 400, 10);
   const district = text(customer.district, 'district', 80, 2);
   if (!Array.isArray(body.items) || !body.items.length || body.items.length > 30) fail('Your bag must contain 1–30 selections.');
   const items = [];
@@ -54,7 +54,8 @@ function makeHandler(db = require('./order-store.cjs')) {
     try {
       if (req.method !== 'POST') { res.setHeader('Allow', 'POST'); fail('Use POST.', 405); }
       if (!String(req.headers['content-type'] || '').startsWith('application/json')) fail('Use JSON.', 415);
-      if (req.headers.origin && req.headers.origin !== (process.env.STORE_ORIGIN || 'https://www.aestrelaglobal.com')) fail('Origin not allowed.', 403);
+      const allowedOrigins = [process.env.STORE_ORIGIN || 'https://www.aestrelaglobal.com', 'https://aestrelaglobal.com'];
+      if (req.headers.origin && !allowedOrigins.includes(req.headers.origin)) fail('Origin not allowed.', 403);
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       if (!body || JSON.stringify(body).length > 16000) fail('Invalid request.');
       const c = config();
